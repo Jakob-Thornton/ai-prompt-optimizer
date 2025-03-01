@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import './App.css';
-import { initializeApp } from "firebase/app";
+import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 
-// Your Firebase configuration
+// Your Firebase config (correct and verified)
 const firebaseConfig = {
   apiKey: "AIzaSyBlrLb-hp-ucHNeuOOXvBAUeJZSd3VRsIE",
   authDomain: "ai-prompt-optimizer.firebaseapp.com",
@@ -14,7 +14,7 @@ const firebaseConfig = {
   measurementId: "G-EHFN2S95TZ"
 };
 
-// Initialize Firebase
+// Initialize Firebase (carefully)
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -30,7 +30,6 @@ function App() {
         .replace(/tell me about/gi, 'Give a comprehensive overview of')
         .replace(/make/gi, 'Design a professional-quality')
         .replace(/help me/gi, 'Create clear and actionable steps to');
-
       if (goal) improved += ` The purpose of this prompt is: ${goal}.`;
       return improved + " Structure the response with clear headings and bullet points.";
     },
@@ -57,7 +56,7 @@ function App() {
     }
   };
 
-  const handleOptimizePrompt = () => {
+  const handleOptimizePrompt = async () => {
     if (!originalPrompt.trim()) {
       alert("Please enter your original prompt first!");
       return;
@@ -66,14 +65,19 @@ function App() {
     const result = strategy(originalPrompt, promptGoal);
     setOptimizedPrompt(result);
 
-    // Save data to Firebase Firestore
-    addDoc(collection(db, "user_prompts"), {
-      originalPrompt,
-      optimizedPrompt: result,
-      aiPlatform,
-      promptGoal,
-      createdAt: new Date()
-    });
+    // Save to Firebase clearly and catch errors
+    try {
+      await addDoc(collection(db, "user_prompts"), {
+        originalPrompt,
+        optimizedPrompt: result,
+        aiPlatform,
+        promptGoal,
+        createdAt: new Date()
+      });
+      console.log("✅ Data sent to Firebase!");
+    } catch (error) {
+      console.error("❌ Firebase error:", error);
+    }
   };
 
   const handleClear = () => {
@@ -90,48 +94,44 @@ function App() {
 
       <div className="input-container">
         <label>Choose your AI platform:</label>
-        <select
-          value={aiPlatform}
-          onChange={(e) => setAiPlatform(e.target.value)}
-        >
-          <option value="general">General AI Assistant (e.g., ChatGPT)</option>
-          <option value="coding">Code Generation (e.g., GitHub Copilot)</option>
-          <option value="creative">Creative Writing (e.g., Claude)</option>
-          <option value="analytical">Research & Analysis (e.g., Perplexity)</option>
+        <select value={aiPlatform} onChange={(e) => setAiPlatform(e.target.value)}>
+          <option value="general">General AI Assistant (ChatGPT)</option>
+          <option value="coding">Code Generation (GitHub Copilot)</option>
+          <option value="creative">Creative Writing (Claude)</option>
+          <option value="analytical">Research & Analysis (Perplexity)</option>
         </select>
       </div>
 
       <div className="input-container">
-        <label>Your goal (optional but recommended):</label>
+        <label>Your goal (optional):</label>
         <input
           type="text"
           value={promptGoal}
           onChange={(e) => setPromptGoal(e.target.value)}
-          placeholder="Example: Generate ideas for a fantasy novel"
+          placeholder="Example: Ideas for a novel"
         />
       </div>
 
       <div className="input-container">
-        <label>Paste your original prompt here:</label>
+        <label>Your original prompt:</label>
         <textarea
           value={originalPrompt}
           onChange={(e) => setOriginalPrompt(e.target.value)}
-          placeholder="Example: Help me write a creative story"
+          placeholder="Example: Help me write a story"
         />
       </div>
 
-      <button className="optimize-btn" onClick={handleOptimizePrompt}>
+      <button onClick={handleOptimizePrompt}>
         Optimize Prompt
       </button>
-
-      <button className="clear-btn" onClick={handleClear}>
+      <button onClick={handleClear}>
         Clear Inputs
       </button>
 
       {optimizedPrompt && (
-        <div className="optimized-result">
-          <h2>Your Optimized Prompt:</h2>
-          <div className="prompt-box">{optimizedPrompt}</div>
+        <div>
+          <h2>Optimized Prompt:</h2>
+          <p>{optimizedPrompt}</p>
         </div>
       )}
     </div>
