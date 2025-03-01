@@ -1,3 +1,4 @@
+// Explicit deployment fix (Firebase integration)
 import React, { useState } from 'react';
 import './App.css';
 import { initializeApp } from 'firebase/app';
