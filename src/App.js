@@ -1,10 +1,11 @@
-// Explicit deployment fix (Firebase integration)
 import React, { useState } from 'react';
 import './App.css';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 
-// Your Firebase config (correct and verified)
+// Final deploy to explicitly fix Firebase connection
+
+// Your Firebase config explicitly hard-coded
 const firebaseConfig = {
   apiKey: "AIzaSyBlrLb-hp-ucHNeuOOXvBAUeJZSd3VRsIE",
   authDomain: "ai-prompt-optimizer.firebaseapp.com",
@@ -15,7 +16,7 @@ const firebaseConfig = {
   measurementId: "G-EHFN2S95TZ"
 };
 
-// Initialize Firebase (carefully)
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -62,22 +63,24 @@ function App() {
       alert("Please enter your original prompt first!");
       return;
     }
+
     const strategy = optimizationStrategies[aiPlatform] || optimizationStrategies.general;
     const result = strategy(originalPrompt, promptGoal);
     setOptimizedPrompt(result);
 
-    // Save to Firebase clearly and catch errors
+    // Explicitly send data to Firebase with alert for success/error
     try {
       await addDoc(collection(db, "user_prompts"), {
-        originalPrompt,
+        originalPrompt: originalPrompt,
         optimizedPrompt: result,
-        aiPlatform,
-        promptGoal,
-        createdAt: new Date()
+        aiPlatform: aiPlatform,
+        promptGoal: promptGoal,
+        createdAt: new Date().toISOString()
       });
-      console.log("✅ Data sent to Firebase!");
+      alert("✅ Prompt successfully saved to Firebase!");
     } catch (error) {
-      console.error("❌ Firebase error:", error);
+      alert("❌ Firebase Error: " + error.message);
+      console.error("Firebase Error:", error);
     }
   };
 
