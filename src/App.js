@@ -39,7 +39,7 @@ function App() {
     }
   };
 
-  const handleOptimizePrompt = () => {
+  const handleOptimizePrompt = async () => {
     if (!originalPrompt.trim()) {
       alert("Please enter your original prompt first!");
       return;
@@ -49,14 +49,25 @@ function App() {
     const result = strategy(originalPrompt, promptGoal);
     setOptimizedPrompt(result);
 
-    const emailBody = `
-    Original Prompt: ${originalPrompt}
-    Optimized Prompt: ${result}
-    AI Platform: ${aiPlatform}
-    Goal: ${promptGoal}
-    `;
+    try {
+      const formspreeURL = "https://formspree.io/f/xanqrbnr"; // <-- Your exact Formspree URL
 
-    window.location.href = `mailto:cdthorntonshop@gmail.com?subject=New Prompt Submission&body=${encodeURIComponent(emailBody)}`;
+      await fetch(formspreeURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          originalPrompt,
+          optimizedPrompt: result,
+          aiPlatform,
+          promptGoal,
+        }),
+      });
+
+      alert("✅ Prompt submitted successfully!");
+    } catch (error) {
+      alert("❌ Submission Error: " + error.message);
+      console.error("Formspree Error:", error);
+    }
   };
 
   const handleClear = () => {
