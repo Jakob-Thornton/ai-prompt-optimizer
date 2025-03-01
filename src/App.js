@@ -1,24 +1,5 @@
 import React, { useState } from 'react';
 import './App.css';
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-
-// Final deploy to explicitly fix Firebase connection
-
-// Your Firebase config explicitly hard-coded
-const firebaseConfig = {
-  apiKey: "AIzaSyBlrLb-hp-ucHNeuOOXvBAUeJZSd3VRsIE",
-  authDomain: "ai-prompt-optimizer.firebaseapp.com",
-  projectId: "ai-prompt-optimizer",
-  storageBucket: "ai-prompt-optimizer.firebasestorage.app",
-  messagingSenderId: "718213459597",
-  appId: "1:718213459597:web:c241e63f8f2d1059d8bcc4",
-  measurementId: "G-EHFN2S95TZ"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 
 function App() {
   const [aiPlatform, setAiPlatform] = useState('general');
@@ -58,7 +39,7 @@ function App() {
     }
   };
 
-  const handleOptimizePrompt = async () => {
+  const handleOptimizePrompt = () => {
     if (!originalPrompt.trim()) {
       alert("Please enter your original prompt first!");
       return;
@@ -68,20 +49,14 @@ function App() {
     const result = strategy(originalPrompt, promptGoal);
     setOptimizedPrompt(result);
 
-    // Explicitly send data to Firebase with alert for success/error
-    try {
-      await addDoc(collection(db, "user_prompts"), {
-        originalPrompt: originalPrompt,
-        optimizedPrompt: result,
-        aiPlatform: aiPlatform,
-        promptGoal: promptGoal,
-        createdAt: new Date().toISOString()
-      });
-      alert("✅ Prompt successfully saved to Firebase!");
-    } catch (error) {
-      alert("❌ Firebase Error: " + error.message);
-      console.error("Firebase Error:", error);
-    }
+    const emailBody = `
+    Original Prompt: ${originalPrompt}
+    Optimized Prompt: ${result}
+    AI Platform: ${aiPlatform}
+    Goal: ${promptGoal}
+    `;
+
+    window.location.href = `mailto:cdthorntonshop@gmail.com?subject=New Prompt Submission&body=${encodeURIComponent(emailBody)}`;
   };
 
   const handleClear = () => {
