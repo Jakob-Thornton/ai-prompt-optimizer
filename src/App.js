@@ -39,7 +39,7 @@ function App() {
     }
   };
 
-  const handleOptimizePrompt = async () => {
+  const handleOptimizePrompt = () => {
     if (!originalPrompt.trim()) {
       alert("Please enter your original prompt first!");
       return;
@@ -49,25 +49,8 @@ function App() {
     const result = strategy(originalPrompt, promptGoal);
     setOptimizedPrompt(result);
 
-    try {
-      const formspreeURL = "https://formspree.io/f/xanqrbnr"; // <-- Your exact Formspree URL
-
-      await fetch(formspreeURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          originalPrompt,
-          optimizedPrompt: result,
-          aiPlatform,
-          promptGoal,
-        }),
-      });
-
-      alert("✅ Prompt submitted successfully!");
-    } catch (error) {
-      alert("❌ Submission Error: " + error.message);
-      console.error("Formspree Error:", error);
-    }
+    // This triggers a form POST submission exactly as Formspree requires
+    document.getElementById('formspreeForm').submit();
   };
 
   const handleClear = () => {
@@ -81,6 +64,18 @@ function App() {
     <div className="App">
       <h1>AI Prompt Optimizer</h1>
       <p>Enter your details below and click "Optimize Prompt" to enhance your AI prompt.</p>
+
+      <form
+        id="formspreeForm"
+        action="https://formspree.io/f/xanqrbnr"
+        method="POST"
+        style={{ display: 'none' }}
+      >
+        <input type="hidden" name="originalPrompt" value={originalPrompt} />
+        <input type="hidden" name="optimizedPrompt" value={optimizedPrompt} />
+        <input type="hidden" name="aiPlatform" value={aiPlatform} />
+        <input type="hidden" name="promptGoal" value={promptGoal} />
+      </form>
 
       <div className="input-container">
         <label>Choose your AI platform:</label>
