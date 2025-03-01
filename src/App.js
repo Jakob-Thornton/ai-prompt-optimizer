@@ -49,7 +49,6 @@ function App() {
     const result = strategy(originalPrompt, promptGoal);
     setOptimizedPrompt(result);
 
-    // This triggers a form POST submission exactly as Formspree requires
     document.getElementById('formspreeForm').submit();
   };
 
@@ -69,6 +68,7 @@ function App() {
         id="formspreeForm"
         action="https://formspree.io/f/xanqrbnr"
         method="POST"
+        target="_blank"
         style={{ display: 'none' }}
       >
         <input type="hidden" name="originalPrompt" value={originalPrompt} />
