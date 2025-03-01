@@ -1,5 +1,22 @@
 import React, { useState } from 'react';
 import './App.css';
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+
+// Your Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBlrLb-hp-ucHNeuOOXvBAUeJZSd3VRsIE",
+  authDomain: "ai-prompt-optimizer.firebaseapp.com",
+  projectId: "ai-prompt-optimizer",
+  storageBucket: "ai-prompt-optimizer.firebasestorage.app",
+  messagingSenderId: "718213459597",
+  appId: "1:718213459597:web:c241e63f8f2d1059d8bcc4",
+  measurementId: "G-EHFN2S95TZ"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 function App() {
   const [aiPlatform, setAiPlatform] = useState('general');
@@ -48,6 +65,15 @@ function App() {
     const strategy = optimizationStrategies[aiPlatform] || optimizationStrategies.general;
     const result = strategy(originalPrompt, promptGoal);
     setOptimizedPrompt(result);
+
+    // Save data to Firebase Firestore
+    addDoc(collection(db, "user_prompts"), {
+      originalPrompt,
+      optimizedPrompt: result,
+      aiPlatform,
+      promptGoal,
+      createdAt: new Date()
+    });
   };
 
   const handleClear = () => {
