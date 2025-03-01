@@ -48,8 +48,6 @@ function App() {
     const strategy = optimizationStrategies[aiPlatform] || optimizationStrategies.general;
     const result = strategy(originalPrompt, promptGoal);
     setOptimizedPrompt(result);
-
-    document.getElementById('formspreeForm').submit();
   };
 
   const handleClear = () => {
@@ -63,19 +61,6 @@ function App() {
     <div className="App">
       <h1>AI Prompt Optimizer</h1>
       <p>Enter your details below and click "Optimize Prompt" to enhance your AI prompt.</p>
-
-      <form
-        id="formspreeForm"
-        action="https://formspree.io/f/xanqrbnr"
-        method="POST"
-        target="_blank"
-        style={{ display: 'none' }}
-      >
-        <input type="hidden" name="originalPrompt" value={originalPrompt} />
-        <input type="hidden" name="optimizedPrompt" value={optimizedPrompt} />
-        <input type="hidden" name="aiPlatform" value={aiPlatform} />
-        <input type="hidden" name="promptGoal" value={promptGoal} />
-      </form>
 
       <div className="input-container">
         <label>Choose your AI platform:</label>
